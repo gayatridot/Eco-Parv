@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save Nature NGO Connect</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<div class="sidebar">
+  <a href="index.html">🏠Home</a>
+  <a href="donate.html">🤝Donors</a>
+  <a href="renew.html">♻️Renew</a>
+  <a href="Ecofriendly.html">🌱Ecofriendly Items</a>
+  <a href="NGO.html">🌐NGO connect</a>
+  <a href="About.html">ℹ️About</a>
+  <a href="contact.html">📞Contact</a>
+</div>
+
+
+<header>
+  <div class="logo">❤ Eco Parv</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="Ecofriendly.html">Ecofriendly Items</a>
+    <a href="donate.html">Donate</a>
+    <a href="renew.html">Renew</a>
+    <a href="About.html">About Us</a>
+    <button class="orange"><a href="donate.html">Start Donating </a> </button>
+  </nav>
+</header>
+
+<div class="ngo-page-wrapper">
+  <section class="ngo-header-banner">
+    <h1>Save Nature NGO Connect</h1>
+    <p>Donate Items & Connect to Help Those in Need</p>
+  </section>
+
+  <section class="ngo-controls">
+    <div class="search-filter-row">
+      <input type="text" id="ngoSearchInput" placeholder="Search by NGO Name...">
+      <input type="text" id="ngoLocationInput" placeholder="Filter by Location...">
+      <button id="ngoSearchBtn" class="ngo-btn ngo-search-btn">Search</button>
+    </div>
+    <div class="sort-row">
+      <span class="sort-label">Sort by:</span>
+      <select id="ngoSortSelect">
+        <option value="all">All NGOs</option>
+        <option value="newest">Newest</option>
+        <option value="active">Most Active</option>
+      </select>
+      <select id="ngoLocationSelect">
+        <option value="all">All Locations</option>
+      </select>
+      <button id="ngoFilterBtn" class="ngo-btn ngo-filter-btn">Apply Filter</button>
+    </div>
+  </section>
+
+  <section class="ngo-grid-container">
+    <div class="ngo-grid" id="ngoGrid">
+      <!-- NGO Cards will be injected here -->
+    </div>
+    <div class="ngo-load-more-container">
+      <button id="ngoLoadMoreBtn" class="ngo-btn ngo-load-more-btn">Load More</button>
+    </div>
+  </section>
+
+  <section class="ngo-registration-section">
+    <div class="ngo-reg-box">
+      <h2>Register Your NGO</h2>
+      <p>Add your NGO to connect with local donors!</p>
+      <form id="ngoRegForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>NGO Name:</label>
+            <input type="text" id="regNgoName" required>
+          </div>
+          <div class="form-group">
+            <label>Location:</label>
+            <input type="text" id="regLocation" required>
+          </div>
+          <div class="form-group">
+            <label>Contact Email:</label>
+            <input type="email" id="regEmail" required>
+          </div>
+          <div class="form-group">
+            <label>Donate Email / Link:</label>
+            <input type="text" id="regDonate" required>
+          </div>
+          <div class="form-group">
+            <label>Phone Number:</label>
+            <input type="text" id="regPhone" required>
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Number:</label>
+            <input type="text" id="regWhatsapp" required>
+          </div>
+          <div class="form-group">
+            <label>NGO Website (optional):</label>
+            <input type="text" id="regWebsite">
+          </div>
+        </div>
+        <div class="form-upload-row">
+          <label>Upload NGO Image:</label>
+          <input type="file" id="regImage" accept="image/*">
+          <span class="file-chosen-text" id="fileChosenText">No file chosen</span>
+          <button type="button" id="regCancelBtn" class="ngo-btn ngo-cancel-btn">Cancel</button>
+          <button type="submit" class="ngo-btn ngo-submit-btn">Register</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div><a href="donate.html">Donate</a></div>
+  <div><a href="About.html">Volunteer</a></div>
+  <div><a href="About.html">FAQ</a></div>
+  <div><a href="contact.html">Privacy Policy</a></div>
+</footer>
+
+<script src="script.js"></script>
+<script src="ngo.js"></script>
+</body>
+
+</html>
