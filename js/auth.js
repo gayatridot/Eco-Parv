@@ -38,7 +38,7 @@ import {
     increment
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-import { firebaseConfig } from "./config.js";
+import { firebaseConfig } from "../config.js";
 
 
 //────────────────────────────────────
