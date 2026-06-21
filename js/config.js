@@ -5,11 +5,11 @@
 
 
 export const firebaseConfig = {
-    apiKey: "AIzaSyDtLa41N5gIbKHNb4JkATtEhD8xOzL4Wo0",
-    authDomain: "eco-parv.firebaseapp.com",
-    projectId: "eco-parv",
-    storageBucket: "eco-parv.firebasestorage.app",
-    messagingSenderId: "584953989194",
-    appId: "1:584953989194:web:0f7119edd1c80b70f4feb3",
-    databaseURL: "https://eco-parv-default-rtdb.firebaseio.com",
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
