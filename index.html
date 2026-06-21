@@ -7,6 +7,10 @@
   <title>Save Nature</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="auth.css">
+  <script src="utils.js"></script>
+  <script src="chatbot.js" defer></script>
+  <script type="module" src="auth.js"></script>
 </head>
 
 <body>
@@ -29,7 +33,7 @@
       <a href="donate.html">Donate</a>
       <a href="renew.html">Renew</a>
       <a href="About.html">About Us</a>
-      <button class="orange"><a href="donate.html">Start Donating </a> </button>
+      <a href="donate.html" class="orange-btn">Start Donating </a>
     </nav>
   </header>
 
@@ -38,8 +42,8 @@
       <h1>Share Food, Donate Essentials,<br>Renew Hope.</h1>
       <p>Give what you no longer need to those who need it most.</p>
       <div class="btns">
-        <button class="orange"><a href="donate.html">Donate Food</a></button>
-        <button class="green"><a href="donate.html">Donate Clothes & Essentials</a></button>
+        <a href="donate.html" class="orange-btn">Donate Food</a>
+        <a href="donate.html" class="green-btn">Donate Clothes & Essentials</a>
       </div>
     </div>
   </section>
@@ -48,24 +52,24 @@
     <h2>Donate Items to Help Others</h2>
     <div class="grid">
       <div class="card">
-        <div class="img"><img src="https://files.catbox.moe/7d5ygy.PNG" alt="Food" /></div>
-        <h3>Donate Food</h3><button class="orange"><a href="donate.html">Donate Now</a></button>
+        <div class="img"><img loading="lazy" src="https://files.catbox.moe/7d5ygy.PNG" alt="Food" /></div>
+        <h3>Donate Food</h3><a href="donate.html" class="orange-btn">Donate Now</a>
       </div>
       <div class="card">
-        <div class="img"><img src="https://files.catbox.moe/59s43r.PNG" /></div>
-        <h3>Donate Clothes</h3><button class="orange"><a href="donate.html">Donate Now</a></button>
+        <div class="img"><img loading="lazy" src="https://files.catbox.moe/59s43r.PNG" alt="Donate Clothes" /></div>
+        <h3>Donate Clothes</h3><a href="donate.html" class="orange-btn">Donate Now</a>
       </div>
       <div class="card">
-        <div class="img"><img src="https://files.catbox.moe/o1db0y.PNG" alt="" /></div>
-        <h3>Donate Shoes</h3><button class="orange"><a href="donate.html">Donate Now</a></button>
+        <div class="img"><img loading="lazy" src="https://files.catbox.moe/o1db0y.PNG" alt="Donate Shoes" /></div>
+        <h3>Donate Shoes</h3><a href="donate.html" class="orange-btn">Donate Now</a>
       </div>
       <div class="card">
-        <div class="img"><img src="https://files.catbox.moe/clsf0f.PNG" alt="" /></div>
-        <h3>Donate Bags</h3><button class="orange"><a href="donate.html">Donate Now</a></button>
+        <div class="img"><img loading="lazy" src="https://files.catbox.moe/clsf0f.PNG" alt="Donate Bags" /></div>
+        <h3>Donate Bags</h3><a href="donate.html" class="orange-btn">Donate Now</a>
       </div>
       <div class="card">
-        <div class="img"><img src="https://files.catbox.moe/qkdpgb.PNG" alt="" /></div>
-        <h3>Donate Blankets</h3><button class="orange"><a href="donate.html">Donate Now</a></button>
+        <div class="img"><img loading="lazy" src="https://files.catbox.moe/qkdpgb.PNG" alt="Donate Blankets" /></div>
+        <h3>Donate Blankets</h3><a href="donate.html" class="orange-btn">Donate Now</a>
       </div>
     </div>
   </section>
@@ -73,7 +77,7 @@
   <section class="renew">
     <h2>Renew & Reuse</h2>
     <p>We clean, renew, and deliver your donations to those in need.</p>
-    <button class="green"><a href="renew.html">How We Renew ?</a> </button>
+    <a href="renew.html" class="green-btn">How We Renew ?</a>
   </section>
 
   <section class="cards">
@@ -82,51 +86,51 @@
 
       <div class="card">
         <div class="img">
-          <img src="https://files.catbox.moe/q348bw.jpg" alt="Bamboo Toothbrush" />
+          <img loading="lazy" src="https://files.catbox.moe/q348bw.jpg" alt="Bamboo Toothbrush" />
         </div>
         <h3>Bamboo Toothbrush</h3>
         <h2>₹179</h2>
-        <button class="orange"><a href="https://www.amazon.in/s?k=bamboo+toothbrush" target="_blank">Buy
-            Now</a></button>
+        <a href="https://www.amazon.in/s?k=bamboo+toothbrush" class="orange-btn">Buy
+            Now</a>
       </div>
 
       <div class="card">
         <div class="img">
-          <img src="https://files.catbox.moe/mhv4yx.jpg" alt="Steel Water Bottle" />
+          <img loading="lazy" src="https://files.catbox.moe/mhv4yx.jpg" alt="Steel Water Bottle" />
         </div>
         <h3>Steel Water Bottle</h3>
         <h2>₹150 </h2>
-        <button class="orange"><a href="https://www.amazon.in/s?k=steel+water+bottle" target="_blank">Buy
-            Now</a></button>
+        <a href="https://www.amazon.in/s?k=steel+water+bottle" class="orange-btn">Buy
+            Now</a>
       </div>
 
       <div class="card">
         <div class="img">
-          <img src="https://files.catbox.moe/fr6h5p.jpg" alt="Cloth Shopping Bag" />
+          <img loading="lazy" src="https://files.catbox.moe/fr6h5p.jpg" alt="Cloth Shopping Bag" />
         </div>
         <h3>Cloth Shopping Bag</h3>
         <h2>₹199</h2>
-        <button class="orange"><a href="https://www.amazon.in/s?k=cloth+shopping+bag" target="_blank">Buy
-            Now</a></button>
+        <a href="https://www.amazon.in/s?k=cloth+shopping+bag" class="orange-btn">Buy
+            Now</a>
       </div>
 
       <div class="card">
         <div class="img">
-          <img src="https://files.catbox.moe/aag4y5.jpg" alt="Organic Soap" />
+          <img loading="lazy" src="https://files.catbox.moe/aag4y5.jpg" alt="Organic Soap" />
         </div>
         <h3>Organic Soap</h3>
         <h2>₹150</h2>
-        <button class="orange"><a href="https://www.amazon.in/s?k=organic+soap" target="_blank">Buy Now</a></button>
+        <a href="https://www.amazon.in/s?k=organic+soap" class="orange-btn">Buy Now</a>
       </div>
 
       <div class="card">
         <div class="img">
-          <img src="https://files.catbox.moe/6ur92m.jpg" alt="Reusable Coffee Cup" />
+          <img loading="lazy" src="https://files.catbox.moe/6ur92m.jpg" alt="Reusable Coffee Cup" />
         </div>
         <h3>Reusable Coffee Cup</h3>
         <h2>₹150</h2>
-        <button class="orange"><a href="https://www.amazon.in/s?k=reusable+coffee+cup" target="_blank">Buy
-            Now</a></button>
+        <a href="https://www.amazon.in/s?k=reusable+coffee+cup" class="orange-btn">Buy
+            Now</a>
       </div>
 
     </div>
@@ -149,18 +153,40 @@
     </div>
   </section>
 
+  <section class="impact-dashboard">
+    <h2>Your Personal Impact Dashboard</h2>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <h3>Carbon Saved</h3>
+        <h1><span id="carbonSaved">0</span> <span>kg CO₂</span></h1>
+        <p>Equivalent to planting <span id="treesPlanted">0</span> trees 🌳</p>
+      </div>
+      <div class="impact-card">
+        <h3>Items Renewed</h3>
+        <h1 id="itemsRenewed">0</h1>
+        <p>Clothes & items kept out of landfills ♻️</p>
+      </div>
+      <div class="impact-card">
+        <h3>People Helped</h3>
+        <h1 id="peopleHelped">0</h1>
+        <p>Through food and essential donations 🤝</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Smart Assistant Widget -->
-  <button class="chat-fab" id="chatFab" onclick="toggleChat(event)">
+  <button class="chat-fab" id="chatFab" onclick="toggleChat(event)" aria-label="Toggle Chat">
     <i class="fa-solid fa-comment-dots"></i>
   </button>
-  
+
   <div class="chat-widget collapsed" id="chatWidget">
     <div class="chat-header" onclick="toggleChat(event)">
       <span>🌱 Eco Assistant</span>
       <i class="fa-solid fa-xmark"></i>
     </div>
     <div class="chat-body" id="chatBody">
-      <div class="bot-msg">Hi! I'm your Eco Assistant. Ask me about donations, volunteering, or eco-friendly items!</div>
+      <div class="bot-msg">Hi! I'm your Eco Assistant. Ask me about donations, volunteering, or eco-friendly items!
+      </div>
     </div>
     <div class="chat-input" id="chatInputArea">
       <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="handleChat(event)">
@@ -174,7 +200,6 @@
     <div><a href="About.html">FAQ</a></div>
     <div><a href="contact.html">Privacy Policy</a></div>
   </footer>
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
-
 </html>

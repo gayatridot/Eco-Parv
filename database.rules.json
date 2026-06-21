@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "ngos": {
+      ".read": "true",
+      "$uid": {
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "donations": {
+      ".read": "true",
+      "$donationId": {
+        ".write": "auth != null && ((!data.exists() && newData.child('donorUid').val() == auth.uid) || (data.exists() && data.child('donorUid').val() == auth.uid) || (data.exists() && data.child('ngoId').exists() && root.child('ngos').child(auth.uid).child(data.child('ngoId').val()).exists()))"
+      }
+    },
+    "userImpact": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && (auth.uid == $uid || root.child('ngos').child(auth.uid).exists())"
+      }
+    }
+  }
+}

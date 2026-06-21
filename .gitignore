@@ -1,1 +1,25 @@
+# Environment variables (never commit secrets)
 .env
+.env.local
+
+# Node.js dependencies
+node_modules/
+
+# Build output (if using bundlers like Vite/React/Next)
+dist/
+build/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store        # macOS
+Thumbs.db        # Windows
+
+# Editor/IDE settings
+.vscode/
+.idea/
