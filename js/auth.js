@@ -68,15 +68,15 @@ const googleProvider = new GoogleAuthProvider();
  * @param {number} itemsAdd    — items renewed to add
  * @param {number} peopleAdd   — people helped to add
  */
-window.updateImpact = async function(carbonAdd, itemsAdd, peopleAdd = 0, targetUid = null) {
+window.updateImpact = async function (carbonAdd, itemsAdd, peopleAdd = 0, targetUid = null) {
     const uid = targetUid || window.currentUser?.uid;
     if (!uid) return; // not logged in — do nothing
 
     const statsRef = ref(db, `userImpact/${uid}`);
     const updates = {};
-    if (carbonAdd)  updates.carbonSaved   = increment(carbonAdd);
-    if (itemsAdd)   updates.itemsRenewed  = increment(itemsAdd);
-    if (peopleAdd)  updates.peopleHelped  = increment(peopleAdd);
+    if (carbonAdd) updates.carbonSaved = increment(carbonAdd);
+    if (itemsAdd) updates.itemsRenewed = increment(itemsAdd);
+    if (peopleAdd) updates.peopleHelped = increment(peopleAdd);
 
     try {
         await update(statsRef, updates);
@@ -98,21 +98,21 @@ window.updateImpact = async function(carbonAdd, itemsAdd, peopleAdd = 0, targetU
  * @param {Function} callback
  * @returns {Function} unsubscribe
  */
-window.subscribeImpact = function(callback) {
+window.subscribeImpact = function (callback) {
     const uid = window.currentUser?.uid;
     if (!uid) {
         callback({ carbon: 0, items: 0, people: 0, trees: 0 });
-        return () => {}; // noop unsubscribe
+        return () => { }; // noop unsubscribe
     }
 
     const statsRef = ref(db, `userImpact/${uid}`);
     const unsub = onValue(statsRef, (snap) => {
         const d = snap.val() || {};
         callback({
-            carbon: d.carbonSaved  || 0,
-            items:  d.itemsRenewed || 0,
+            carbon: d.carbonSaved || 0,
+            items: d.itemsRenewed || 0,
             people: d.peopleHelped || 0,
-            trees:  d.treesPlanted || 0
+            trees: d.treesPlanted || 0
         });
     });
     return unsub;
@@ -927,7 +927,7 @@ function closeModal() {
 
     const isProtected = location.pathname !== "/" && !location.pathname.endsWith("index.html");
     if (!window.isAuthenticated && isProtected) {
-        location.href = "index.html";
+        location.href = "/index.html";
     }
 
 }
