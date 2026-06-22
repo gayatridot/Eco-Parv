@@ -68,7 +68,7 @@ function updateDonationStatus(donationId, newStatus) {
         const snap = await get(donationRef);
         const data = snap.val() || {};
         const qty = parseInt(data.quantity) || 1;
-        const donorUid = data.donorUid;
+        const donorUid = data.donorId;
         if (donorUid) {
           window.updateImpact(0, 0, qty, donorUid); // +peopleHelped for the donor
         }

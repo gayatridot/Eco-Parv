@@ -165,14 +165,16 @@ nav button,
 }
 
 .img {
+    height: 140px;
+    background: #ddd;
+    border-radius: 10px;
     width: 90%;
-    height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     overflow: hidden;
-    border-radius: 10px;
+
 }
 
 .img img {
@@ -192,17 +194,15 @@ nav button,
 }
 
 .card {
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     background: white;
     padding: 15px;
     border-radius: 15px;
     text-align: center
 }
 
-.img {
-    height: 140px;
-    background: #ddd;
-    border-radius: 10px
-}
+
 
 .card button {
     margin-top: 15px;
@@ -300,22 +300,28 @@ nav button,
 }
 
 footer {
+    background: #4d8b1c;
+    padding: 50px 5%;
+    text-align: center;
     margin: 40px 60px 0 120px;
     padding: 30px;
-    background: #0d5a23;
     display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 100px;
     justify-content: space-around
 }
 
 
 /* Layout Container */
 .main-container {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr;
+    gap: 20px;
+    padding: 20px;
+    align-items: start;
     max-width: 1000px;
     margin: 100px auto;
-    padding: 0 15px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
 }
 
 /* Responsive Grid for Desktop (Screens bigger than 768px) */
@@ -326,12 +332,6 @@ footer {
 }
 
 /* Card Styling */
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
 
 .card h2 {
     margin-bottom: 15px;
@@ -339,18 +339,6 @@ footer {
     color: #2c3e50;
     border-bottom: 2px solid #eef2f3;
     padding-bottom: 8px;
-}
-
-/* ==========================================
-   MAIN LAYOUT
-========================================== */
-
-.main-container {
-    display: grid;
-    grid-template-columns: 1.2fr 2fr;
-    gap: 20px;
-    padding: 20px;
-    align-items: start;
 }
 
 /* ==========================================
@@ -415,7 +403,7 @@ footer {
 
 .form-group label {
     display: block;
-    color: black;
+    color: #333;
     margin-bottom: 8px;
     font-size: .95rem;
     font-weight: 600;
@@ -680,6 +668,7 @@ footer {
 
 .search-box input,
 .search-box select {
+    width: 300px;
     height: 70px;
     border: 2px solid #ddd;
     border-radius: 10px;
@@ -692,9 +681,7 @@ footer {
     flex: 1;
 }
 
-.search-box select {
-    width: 300px;
-}
+
 
 .search-box button {
     width: 180px;
@@ -979,13 +966,9 @@ footer {
 
 /*================ FOOTER =================*/
 
-footer {
-    background: #4d8b1c;
-    padding: 50px 5%;
-    text-align: center;
-}
 
 .footer-links {
+    flex-wrap: wrap;
     display: flex;
     justify-content: center;
     gap: 50px;
@@ -1048,8 +1031,7 @@ footer {
 
     .cards,
     .renew,
-    .stats,
-    footer {
+    .stats {
         margin: 30px 20px;
     }
 
@@ -1087,11 +1069,6 @@ footer {
 
     .benefits {
         grid-template-columns: 1fr;
-    }
-
-    .footer-links {
-        flex-wrap: wrap;
-        gap: 20px;
     }
 
     .impact-dashboard {
@@ -1147,8 +1124,7 @@ footer {
 
     .cards,
     .renew,
-    .stats,
-    footer {
+    .stats {
         margin: 20px 10px;
         padding: 20px;
     }
@@ -1157,12 +1133,6 @@ footer {
         flex-direction: column;
         align-items: center;
         text-align: center;
-    }
-
-    footer {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
     }
 
     .hero-eco h1 {
@@ -1426,12 +1396,6 @@ footer {
     text-align: left;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
-}
 
 .form-group input {
     width: 100%;
@@ -2423,6 +2387,9 @@ footer {
 
 .bot-msg,
 .user-msg {
+    background: #ff922d;
+    align-self: flex-end;
+    color: white;
     padding: 12px;
     border-radius: 12px;
     max-width: 85%;
@@ -2435,13 +2402,6 @@ footer {
     align-self: flex-start;
     border-bottom-left-radius: 2px;
     color: #115a25;
-}
-
-.user-msg {
-    background: #ff922d;
-    align-self: flex-end;
-    border-bottom-right-radius: 2px;
-    color: white;
 }
 
 .chat-input {
@@ -2514,7 +2474,8 @@ footer {
 }
 
 /* Base button styles to ensure consistency and fix interactive nesting issues */
-.orange-btn, .green-btn {
+.orange-btn,
+.green-btn {
     display: inline-block;
     padding: 10px 20px;
     border-radius: 5px;

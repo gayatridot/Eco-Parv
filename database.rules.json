@@ -1,27 +1,45 @@
 {
   "rules": {
+    ".read": false,
+    ".write": false,
+
     "users": {
       "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid"
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
       }
     },
-    "ngos": {
-      ".read": "true",
-      "$uid": {
-        ".write": "auth != null && auth.uid == $uid"
-      }
-    },
-    "donations": {
-      ".read": "true",
-      "$donationId": {
-        ".write": "auth != null && ((!data.exists() && newData.child('donorUid').val() == auth.uid) || (data.exists() && data.child('donorUid').val() == auth.uid) || (data.exists() && data.child('ngoId').exists() && root.child('ngos').child(auth.uid).child(data.child('ngoId').val()).exists()))"
-      }
-    },
+
     "userImpact": {
       "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && (auth.uid == $uid || root.child('ngos').child(auth.uid).exists())"
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+
+    "ngos": {
+      ".read": "auth != null",
+
+      "$ownerUid": {
+        "$ngoId": {
+          ".write": "auth != null && auth.uid === $ownerUid"
+        }
+      }
+    },
+
+    "donations": {
+      ".read": "auth != null",
+
+      "$donationId": {
+        ".write": "auth != null && ((!data.exists() && newData.child('donorUid').val() === auth.uid) || (data.exists() && data.child('donorUid').val() === auth.uid && newData.child('donorUid').val() === data.child('donorUid').val()) || (data.exists() && data.child('ngoId').exists() && root.child('ngos').child(auth.uid).child(data.child('ngoId').val()).exists()))",
+
+        "donorUid": {
+          ".validate": "newData.isString()"
+        },
+
+        "status": {
+          ".validate": "!newData.exists() || newData.val() === 'pending' || newData.val() === 'informed' || newData.val() === 'accepted' || newData.val() === 'rejected'"
+        }
       }
     }
   }

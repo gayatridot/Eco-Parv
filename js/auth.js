@@ -38,21 +38,21 @@ import {
     increment
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-import { firebaseConfig } from "../config.js";
-
-
 //────────────────────────────────────
-// FIREBASE INITIALIZATION
+// FIREBASE INITIALIZATION - FIXED
 //────────────────────────────────────
+
+// Fetch config from your Vercel API
+const res = await fetch('/api/config');
+if (!res.ok) throw new Error('Failed to load Firebase config');
+const firebaseConfig = await res.json();
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getDatabase(app);
 
-const googleProvider = new GoogleAuthProvider();
-
-
+export const googleProvider = new GoogleAuthProvider();
 //────────────────────────────────────
 // IMPACT DASHBOARD — FIREBASE FUNCTIONS
 // Exposed on `window` so any page (module or inline) can call them.
