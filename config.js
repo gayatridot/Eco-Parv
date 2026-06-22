@@ -3,7 +3,6 @@
 // Replace all placeholder values below with your real Firebase project credentials.
 // Get them from: Firebase Console → Project Settings → Your Apps → Web App
 
-
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
