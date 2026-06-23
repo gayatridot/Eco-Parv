@@ -38,7 +38,7 @@ window.initImpactDashboard = function () {
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+function initScript() {
     window.initImpactDashboard();
 
     // ── Renew page: track .btn-renew clicks ──
@@ -760,11 +760,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================
     openPopup("food");
 
-    // ==========================
-    // AUTO REFRESH
-    // ==========================
     setInterval(updateDashboard, 60000);
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initScript);
+} else {
+    initScript();
+}
 
 const productsContainer =
     document.getElementById("productsContainer");

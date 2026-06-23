@@ -1,7 +1,7 @@
 import { db } from "./auth.js";
 import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+function initNgoPage() {
     const mockNgos = [
         {
             id: "mock1",
@@ -392,4 +392,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize
     populateDropdowns();
     renderNGOs();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initNgoPage);
+} else {
+    initNgoPage();
+}
