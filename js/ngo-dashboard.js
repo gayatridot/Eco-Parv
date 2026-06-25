@@ -7,6 +7,7 @@ import { ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Utility to create a donation card element
+// Utility to create a donation card element
 function createDonationCard(donation) {
   const card = document.createElement("div");
   card.className = "donation-card";
@@ -19,62 +20,153 @@ function createDonationCard(donation) {
   else if (donation.status === "informed") statusBadge.style.background = "#17a2b8"; // teal
   else statusBadge.style.background = "#ffc107"; // yellow
 
+  // Parse expiry if exists
+  const expiryText = donation.expiryTime ? new Date(donation.expiryTime).toLocaleString() : (donation.createdAt ? new Date(donation.createdAt + 7 * 24 * 60 * 60 * 1000).toLocaleString() : "N/A");
+
   card.innerHTML = `
     <h3>${donation.item || donation.itemName || "Donation"}</h3>
     <p><strong>From:</strong> ${donation.donor || "Anonymous"}</p>
     <p><strong>Category:</strong> ${donation.category || ""}</p>
-    <p><strong>Location:</strong> ${donation.coords || ""}</p>
-    <p><strong>Expiry:</strong> ${new Date(donation.expiryTime).toLocaleString()}</p>
+    <p><strong>Location:</strong> ${donation.coords || donation.location || ""}</p>
+    <p><strong>Expiry:</strong> ${expiryText}</p>
   `;
   card.appendChild(statusBadge);
 
-  // Accept / Reject buttons (only show if status is pending or informed)
-  if (!donation.status || donation.status === "pending" || donation.status === "informed") {
-    const acceptBtn = document.createElement("button");
-    acceptBtn.className = "ngo-btn accept-btn";
-    acceptBtn.textContent = "Accept";
-    acceptBtn.style.marginRight = "5px";
-    acceptBtn.style.background = "#28a745";
-    acceptBtn.style.color = "white";
-    acceptBtn.onclick = () => updateDonationStatus(donation.id, "accepted");
+  const actionsDiv = document.createElement("div");
+  actionsDiv.className = "donation-actions";
+  actionsDiv.style.marginTop = "10px";
+  card.appendChild(actionsDiv);
 
-    const rejectBtn = document.createElement("button");
-    rejectBtn.className = "ngo-btn reject-btn";
-    rejectBtn.textContent = "Reject";
-    rejectBtn.style.background = "#dc3545";
-    rejectBtn.style.color = "white";
-    rejectBtn.onclick = () => updateDonationStatus(donation.id, "rejected");
+  function resetActions() {
+    actionsDiv.innerHTML = "";
+    const currentStatus = donation.status || "pending";
 
-    const actionsDiv = document.createElement("div");
-    actionsDiv.className = "donation-actions";
-    actionsDiv.style.marginTop = "10px";
-    actionsDiv.appendChild(acceptBtn);
-    actionsDiv.appendChild(rejectBtn);
-    card.appendChild(actionsDiv);
+    if (currentStatus === "pending" || currentStatus === "informed") {
+      const acceptBtn = document.createElement("button");
+      acceptBtn.className = "ngo-btn accept-btn";
+      acceptBtn.textContent = "Accept";
+      acceptBtn.style.marginRight = "5px";
+      acceptBtn.style.background = "#28a745";
+      acceptBtn.style.color = "white";
+      acceptBtn.onclick = () => updateDonationStatus(donation.id, "accepted");
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "ngo-btn reject-btn";
+      rejectBtn.textContent = "Reject";
+      rejectBtn.style.marginRight = "5px";
+      rejectBtn.style.background = "#dc3545";
+      rejectBtn.style.color = "white";
+      rejectBtn.onclick = () => updateDonationStatus(donation.id, "rejected");
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "ngo-btn delete-btn";
+      deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      deleteBtn.style.background = "#6c757d";
+      deleteBtn.style.color = "white";
+      deleteBtn.onclick = () => {
+        if (confirm("Are you sure you want to hide/delete this donation card from your dashboard?")) {
+          updateDonationStatus(donation.id, "DeletedByNGO");
+        }
+      };
+
+      actionsDiv.appendChild(acceptBtn);
+      actionsDiv.appendChild(rejectBtn);
+      actionsDiv.appendChild(deleteBtn);
+    } else if (currentStatus === "accepted" || currentStatus === "rejected") {
+      const editBtn = document.createElement("button");
+      editBtn.className = "ngo-btn edit-btn";
+      editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit';
+      editBtn.style.marginRight = "5px";
+      editBtn.style.background = "#ff922d";
+      editBtn.style.color = "white";
+      editBtn.onclick = () => {
+        actionsDiv.innerHTML = "";
+
+        const selectEl = document.createElement("select");
+        selectEl.className = "ngo-status-select";
+        selectEl.style.padding = "6px 10px";
+        selectEl.style.marginRight = "8px";
+        selectEl.style.borderRadius = "5px";
+        selectEl.style.border = "1px solid #ccc";
+
+        const statuses = ["accepted", "rejected", "informed", "pending"];
+        statuses.forEach(statusVal => {
+          const opt = document.createElement("option");
+          opt.value = statusVal;
+          opt.textContent = statusVal.charAt(0).toUpperCase() + statusVal.slice(1);
+          if (currentStatus === statusVal) opt.selected = true;
+          selectEl.appendChild(opt);
+        });
+
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "ngo-btn save-btn";
+        saveBtn.textContent = "Save";
+        saveBtn.style.marginRight = "5px";
+        saveBtn.style.background = "#28a745";
+        saveBtn.style.color = "white";
+        saveBtn.onclick = () => {
+          updateDonationStatus(donation.id, selectEl.value);
+        };
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.className = "ngo-btn cancel-btn";
+        cancelBtn.textContent = "Cancel";
+        cancelBtn.style.background = "#6c757d";
+        cancelBtn.style.color = "white";
+        cancelBtn.onclick = () => {
+          resetActions();
+        };
+
+        actionsDiv.appendChild(selectEl);
+        actionsDiv.appendChild(saveBtn);
+        actionsDiv.appendChild(cancelBtn);
+      };
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "ngo-btn delete-btn";
+      deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+      deleteBtn.style.background = "#6c757d";
+      deleteBtn.style.color = "white";
+      deleteBtn.onclick = () => {
+        if (confirm("Are you sure you want to hide/delete this donation card from your dashboard?")) {
+          updateDonationStatus(donation.id, "DeletedByNGO");
+        }
+      };
+
+      actionsDiv.appendChild(editBtn);
+      actionsDiv.appendChild(deleteBtn);
+    }
   }
 
+  resetActions();
   return card;
 }
 
 function updateDonationStatus(donationId, newStatus) {
-  // Update the status field in the database
   const donationRef = ref(db, `donations/${donationId}`);
-  update(donationRef, { status: newStatus })
-    .then(async () => {
-      console.log(`Donation ${donationId} marked as ${newStatus}`);
+  get(donationRef).then(async (snap) => {
+    const data = snap.val() || {};
+    const oldStatus = data.status || "pending";
+    const qty = parseInt(data.quantity) || 1;
+    const donorUid = data.donorUid || data.donorId;
 
-      // When an NGO accepts a donation, increment peopleHelped by the quantity
-      if (newStatus === "accepted" && window.updateImpact) {
-        const snap = await get(donationRef);
-        const data = snap.val() || {};
-        const qty = parseInt(data.quantity) || 1;
-        const donorUid = data.donorId;
-        if (donorUid) {
-          window.updateImpact(0, 0, qty, donorUid); // +peopleHelped for the donor
+    update(donationRef, { status: newStatus })
+      .then(async () => {
+        console.log(`Donation ${donationId} marked as ${newStatus}`);
+
+        if (window.updateImpact && donorUid) {
+          // Case 1: Was NOT accepted, now is accepted -> increment
+          if (oldStatus !== "accepted" && newStatus === "accepted") {
+            window.updateImpact(0, 0, qty, donorUid);
+          }
+          // Case 2: Was accepted, now is NOT accepted -> decrement
+          else if (oldStatus === "accepted" && newStatus !== "accepted") {
+            window.updateImpact(0, 0, -qty, donorUid);
+          }
         }
-      }
-    })
-    .catch(err => console.error("Failed to update donation status:", err));
+      })
+      .catch(err => console.error("Failed to update donation status:", err));
+  }).catch(err => console.error("Failed to read donation before update:", err));
 }
 
 function renderDonations(donations) {
@@ -109,7 +201,7 @@ onAuthStateChanged(auth, user => {
     onValue(donationsRef, snapshot => {
       const all = snapshot.val() || {};
       const filtered = Object.entries(all)
-        .filter(([id, data]) => userNgoIds.includes(data.ngoId))
+        .filter(([id, data]) => userNgoIds.includes(data.ngoId) && data.status !== "DeletedByNGO")
         .map(([id, data]) => ({ id, ...data }));
       renderDonations(filtered);
     });

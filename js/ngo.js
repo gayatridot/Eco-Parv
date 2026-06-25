@@ -1,5 +1,6 @@
-import { db } from "./auth.js";
-import { getDatabase, ref, push, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { db, auth } from "./auth.js";
+import { getDatabase, ref, push, onValue, set, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 function initNgoPage() {
     const mockNgos = [
@@ -152,6 +153,17 @@ function initNgoPage() {
     let filteredNgos = [...ngos];
     let visibleCount = 10;
 
+    let currentUser = null;
+    let editingNgoId = null;
+    let editingOwnerUid = null;
+    let editingNgoImage = null;
+
+    // Track authentication state
+    onAuthStateChanged(auth, user => {
+        currentUser = user || null;
+        renderNGOs(); // Re-render to update Edit/Delete buttons visibility
+    });
+
     // Listen to Firebase RTDB for registered NGOs
     const ngosRef = ref(db, "ngos");
     onValue(ngosRef, (snapshot) => {
@@ -228,6 +240,18 @@ function initNgoPage() {
             const escTag = escapeHTML(ngo.tag);
             const escDesc = escapeHTML(ngo.desc);
 
+            const isOwner = currentUser && ngo.ownerUid && currentUser.uid === ngo.ownerUid;
+            const ownerActions = isOwner
+                ? `<div class="ngo-owner-actions" style="display:flex;gap:6px;margin:8px 0;justify-content:center;">
+                        <button class="ngo-edit-btn" style="background:#ff922d;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button class="ngo-delete-btn" style="background:#dc3545;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                          <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                   </div>`
+                : '';
+
             const card = document.createElement("div");
             card.className = "ngo-card";
             card.innerHTML = `
@@ -245,6 +269,7 @@ function initNgoPage() {
                 </div>
                 <p class="ngo-tag">${escTag}</p>
                 <p class="ngo-desc">${escDesc}</p>
+                ${ownerActions}
                 <div class="ngo-card-actions">
                     <button class="ngo-btn ngo-donate-btn">Donate</button>
                     <button class="ngo-btn ngo-connect-btn">Connect</button>
@@ -276,6 +301,15 @@ function initNgoPage() {
                     window.open(`mailto:${encodeURIComponent(ngo.email)}`, '_blank');
                 }
             });
+
+            if (isOwner) {
+                card.querySelector(".ngo-edit-btn").addEventListener("click", () => {
+                    loadNgoIntoForm(ngo);
+                });
+                card.querySelector(".ngo-delete-btn").addEventListener("click", () => {
+                    deleteNgo(ngo.ownerUid, ngo.id);
+                });
+            }
 
             ngoGrid.appendChild(card);
         });
@@ -336,57 +370,152 @@ function initNgoPage() {
         }
     });
 
-        // Handle Form Submission
-        regForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    function loadNgoIntoForm(ngo) {
+        editingNgoId = ngo.id;
+        editingOwnerUid = ngo.ownerUid;
+        editingNgoImage = ngo.image || null;
 
-            const uid = window.currentUser?.uid;
-            if (!uid) {
-                alert("Please sign in to register an NGO.");
-                return;
-            }
+        document.getElementById("regNgoName").value = ngo.name || "";
+        document.getElementById("regLocation").value = ngo.location || "";
+        document.getElementById("regEmail").value = ngo.email || "";
+        document.getElementById("regDonate").value = ngo.donate || ngo.website || ngo.email || "";
+        document.getElementById("regPhone").value = ngo.phone || "";
+        document.getElementById("regWhatsapp").value = ngo.whatsapp || "";
+        document.getElementById("regWebsite").value = ngo.website || "";
 
-            const newNgo = {
-                name: document.getElementById("regNgoName").value,
-                location: document.getElementById("regLocation").value,
-                email: document.getElementById("regEmail").value,
-                phone: document.getElementById("regPhone").value,
-                whatsapp: document.getElementById("regWhatsapp").value,
-                website: document.getElementById("regWebsite").value,
-                tag: "Recently Registered NGO",
-                desc: "A newly registered NGO on the Save Nature platform ready to connect with donors.",
-                dateAdded: Date.now()
-            };
+        const formHeader = document.querySelector(".ngo-reg-box h2");
+        if (formHeader) formHeader.textContent = "Edit Your NGO";
+        const formSub = document.querySelector(".ngo-reg-box p");
+        if (formSub) formSub.textContent = "Modify your NGO details below";
 
-            const file = regImage.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    newNgo.image = e.target.result;
-                    push(ref(db, `ngos/${uid}`), newNgo);
-                    afterRegistration();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                newNgo.image = "https://files.catbox.moe/aag4y5.jpg";
-                push(ref(db, `ngos/${uid}`), newNgo);
-                afterRegistration();
-            }
-        });
+        const submitBtn = document.querySelector("#ngoRegForm button[type='submit']");
+        if (submitBtn) submitBtn.textContent = "Save Changes";
 
-        function afterRegistration() {
-            populateDropdowns();
-            applyFilters();
-            regForm.reset();
-            fileChosenText.textContent = "No file chosen";
-            alert("NGO Successfully Registered!");
-            // +5 CO₂ for registering an NGO
-            if (window.updateImpact) window.updateImpact(5, 0, 0);
-        }
+        document.querySelector(".ngo-registration-section").scrollIntoView({ behavior: "smooth" });
+    }
 
-    document.getElementById("regCancelBtn").addEventListener("click", () => {
+    function cancelNgoEdit() {
+        editingNgoId = null;
+        editingOwnerUid = null;
+        editingNgoImage = null;
+
         regForm.reset();
         fileChosenText.textContent = "No file chosen";
+
+        const formHeader = document.querySelector(".ngo-reg-box h2");
+        if (formHeader) formHeader.textContent = "Register Your NGO";
+        const formSub = document.querySelector(".ngo-reg-box p");
+        if (formSub) formSub.textContent = "Add your NGO to connect with local donors!";
+
+        const submitBtn = document.querySelector("#ngoRegForm button[type='submit']");
+        if (submitBtn) submitBtn.textContent = "Register";
+    }
+
+    function deleteNgo(ownerUid, ngoId) {
+        if (!confirm("Are you sure you want to delete this NGO permanently?")) return;
+        remove(ref(db, `ngos/${ownerUid}/${ngoId}`))
+            .then(() => {
+                alert("NGO Successfully Deleted!");
+            })
+            .catch(err => {
+                console.error("Failed to delete NGO:", err);
+                alert("Failed to delete NGO: " + err.message);
+            });
+    }
+
+    // Handle Form Submission
+    regForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const uid = currentUser?.uid || window.currentUser?.uid;
+        if (!uid) {
+            alert("Please sign in to register or modify an NGO.");
+            return;
+        }
+
+        if (editingNgoId && editingOwnerUid !== uid) {
+            alert("You do not have permission to edit this NGO.");
+            return;
+        }
+
+        const ngoData = {
+            name: document.getElementById("regNgoName").value.trim(),
+            location: document.getElementById("regLocation").value.trim(),
+            email: document.getElementById("regEmail").value.trim(),
+            donate: document.getElementById("regDonate").value.trim(),
+            phone: document.getElementById("regPhone").value.trim(),
+            whatsapp: document.getElementById("regWhatsapp").value.trim(),
+            website: document.getElementById("regWebsite").value.trim(),
+            tag: editingNgoId ? "Active" : "Recently Registered NGO",
+            desc: editingNgoId ? "Updated NGO profile on the Save Nature platform." : "A newly registered NGO on the Save Nature platform ready to connect with donors.",
+            dateAdded: Date.now()
+        };
+
+        if (editingNgoId) {
+            try {
+                const snap = await get(ref(db, `ngos/${editingOwnerUid}/${editingNgoId}`));
+                const existing = snap.val() || {};
+                ngoData.dateAdded = existing.dateAdded || Date.now();
+                ngoData.tag = existing.tag || "Active";
+                ngoData.desc = existing.desc || "Updated NGO profile.";
+            } catch (_) {}
+        }
+
+        const file = regImage.files[0];
+
+        const saveNgoData = (imageUrl) => {
+            if (imageUrl) {
+                ngoData.image = imageUrl;
+            } else if (editingNgoId) {
+                ngoData.image = editingNgoImage || "https://files.catbox.moe/aag4y5.jpg";
+            } else {
+                ngoData.image = "https://files.catbox.moe/aag4y5.jpg";
+            }
+
+            if (editingNgoId) {
+                set(ref(db, `ngos/${editingOwnerUid}/${editingNgoId}`), ngoData)
+                    .then(() => {
+                        afterRegistration();
+                    })
+                    .catch(err => {
+                        console.error("Update NGO failed:", err);
+                        alert("Update failed: " + err.message);
+                    });
+            } else {
+                const newRef = push(ref(db, `ngos/${uid}`));
+                set(newRef, ngoData)
+                    .then(() => {
+                        afterRegistration();
+                    })
+                    .catch(err => {
+                        console.error("Register NGO failed:", err);
+                        alert("Registration failed: " + err.message);
+                    });
+            }
+        };
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                saveNgoData(ev.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveNgoData(null);
+        }
+    });
+
+    function afterRegistration() {
+        populateDropdowns();
+        applyFilters();
+        const wasEditing = !!editingNgoId;
+        cancelNgoEdit();
+        alert(wasEditing ? "NGO Successfully Updated!" : "NGO Successfully Registered!");
+        if (!wasEditing && window.updateImpact) window.updateImpact(5, 0, 0);
+    }
+
+    document.getElementById("regCancelBtn").addEventListener("click", () => {
+        cancelNgoEdit();
     });
 
     // Initialize

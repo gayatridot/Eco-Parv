@@ -35,6 +35,10 @@ function createStatusBadge(status) {
     case "informed":
       badge.style.background = "#17a2b8"; // teal
       break;
+    case "DeletedByNGO":
+      badge.textContent = "Closed / Archived";
+      badge.style.background = "#6c757d"; // grey
+      break;
     default:
       badge.style.background = "#ffc107"; // yellow
   }
@@ -179,7 +183,7 @@ onAuthStateChanged(auth, user => {
   onValue(donationsRef, snapshot => {
     const all = snapshot.val() || {};
     const donorDonations = Object.entries(all)
-      .filter(([id, d]) => d.donorId === user.uid)
+      .filter(([id, d]) => d.donorUid === user.uid)
       .map(([id, d]) => ({ id, ...d }));
     renderDonationsList(donorDonations);
   });
@@ -195,7 +199,7 @@ onAuthStateChanged(auth, user => {
     quantity: quantityInput.value.trim(),
     condition: conditionSelect.value,
     category: currentCategory,
-    donorId: currentUser.uid,
+    donorUid: currentUser.uid,
     status: "pending",
     createdAt: Date.now()
   };
@@ -232,7 +236,7 @@ catButtons.forEach(btn => {
       onValue(donationsRef, snapshot => {
         const all = snapshot.val() || {};
         const donorDonations = Object.entries(all)
-          .filter(([id, d]) => d.donorId === currentUser.uid)
+          .filter(([id, d]) => d.donorUid === currentUser.uid)
           .map(([id, d]) => ({ id, ...d }));
         renderDonationsList(donorDonations);
       }, { onlyOnce: true });

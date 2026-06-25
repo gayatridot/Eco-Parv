@@ -261,6 +261,12 @@
                 }
             });
         });
+    </script>
+
+    <script type="module">
+        import { db, auth } from "../js/auth.js";
+        import { ref, push, set, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // =================== TEAM REGISTRATION ===================
         const purposeIcons = {
@@ -271,13 +277,16 @@
             'Other': 'fa-users'
         };
 
-        function getTeams() {
-            return JSON.parse(localStorage.getItem('vol_teams') || '[]');
-        }
+        let currentUser = null;
+        let editingTeamId = null;   // tracks which team is being edited
+        let editingTeamLogo = null; // tracks logo of team being edited
+        let allTeamsCache = [];     // live cache for filtering
 
-        function saveTeams(teams) {
-            localStorage.setItem('vol_teams', JSON.stringify(teams));
-        }
+        // Track auth state
+        onAuthStateChanged(auth, user => {
+            currentUser = user || null;
+            renderTeams(allTeamsCache);  // re-render to show/hide edit+delete buttons
+        });
 
         function escapeHTML(str) {
             if (!str) return "";
@@ -293,33 +302,43 @@
             const container = document.getElementById('teamCardsContainer');
             const noMsg = document.getElementById('no-teams-msg');
             container.innerHTML = '';
-            if (teams.length === 0) {
+            if (!teams || teams.length === 0) {
                 noMsg.style.display = 'block';
                 return;
             }
             noMsg.style.display = 'none';
-            teams.forEach((team, index) => {
-                const escName = escapeHTML(team.name);
-                const escPurpose = escapeHTML(team.purpose);
-                const escLocation = escapeHTML(team.location);
-                const escContact = escapeHTML(team.contact);
-                const escLogo = escapeHTML(team.logo);
-                // Be careful with links, but escaping prevents injection
+            teams.forEach(team => {
+                const escName      = escapeHTML(team.name);
+                const escPurpose   = escapeHTML(team.purpose);
+                const escLocation  = escapeHTML(team.location);
+                const escContact   = escapeHTML(team.contact);
+                const escLogo      = escapeHTML(team.logo);
+                const escCreator   = escapeHTML(team.creatorName || 'Anonymous');
                 const icon = purposeIcons[team.purpose] || 'fa-users';
 
-                let logoHTML = '';
-                if (team.logo) {
-                    logoHTML = `<img loading="lazy" src="${escLogo}" alt="logo" class="team-logo-img">`;
-                } else {
-                    logoHTML = `<div class="team-img-placeholder"><i class="fa-solid ${icon}"></i></div>`;
-                }
+                const logoHTML = team.logo
+                    ? `<img loading="lazy" src="${escLogo}" alt="logo" class="team-logo-img">`
+                    : `<div class="team-img-placeholder"><i class="fa-solid ${icon}"></i></div>`;
 
                 const linkBtn = team.link
                     ? `<a href="${escapeHTML(team.link)}" target="_blank" class="connect-btn">Visit Link</a>`
                     : `<button class="connect-btn">Connect</button>`;
+
+                const isCreator = currentUser && currentUser.uid === team.creatorUid;
+                const ownerControls = isCreator
+                    ? `<div class="team-owner-actions" style="display:flex;gap:6px;margin-top:8px;">
+                            <button class="team-edit-btn" data-id="${escapeHTML(team.id)}" style="background:#ff922d;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                              <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button class="team-delete-btn" data-id="${escapeHTML(team.id)}" style="background:#dc3545;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                              <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                       </div>`
+                    : '';
+
                 const card = document.createElement('div');
                 card.className = 'team-card';
-                card.dataset.index = index;
+                card.dataset.id = team.id;
                 card.innerHTML = `
                     ${logoHTML}
                     <div class="team-info">
@@ -327,26 +346,87 @@
                         <p class="purpose">${escPurpose}</p>
                         <p class="location"><i class="fa-solid fa-location-dot"></i> ${escLocation}</p>
                         ${team.contact ? `<p style="font-size:0.85rem;color:#888;">📞 ${escContact}</p>` : ''}
+                        <p style="font-size:0.78rem;color:#aaa;margin-top:6px;"><i class="fa-solid fa-user"></i> Created by: <strong>${escCreator}</strong></p>
+                        ${ownerControls}
                     </div>
                     ${linkBtn}
                 `;
+
+                // Wire up Edit button
+                if (isCreator) {
+                    card.querySelector('.team-edit-btn').addEventListener('click', () => loadTeamIntoForm(team));
+                    card.querySelector('.team-delete-btn').addEventListener('click', () => deleteTeam(team.id));
+                }
+
                 container.appendChild(card);
             });
         }
 
-        function applySearch() {
-            const name = document.getElementById('search-name').value.toLowerCase();
-            const purpose = document.getElementById('search-purpose').value;
-            const location = document.getElementById('search-location').value.toLowerCase();
-            let teams = getTeams();
-            if (name) teams = teams.filter(t => t.name.toLowerCase().includes(name));
-            if (purpose) teams = teams.filter(t => t.purpose === purpose);
-            if (location) teams = teams.filter(t => t.location.toLowerCase().includes(location));
-            renderTeams(teams);
+        function loadTeamIntoForm(team) {
+            editingTeamId = team.id;
+            editingTeamLogo = team.logo || null;
+            document.getElementById('vol-name').value     = team.name     || '';
+            document.getElementById('vol-purpose').value  = team.purpose  || '';
+            document.getElementById('vol-link').value     = team.link     || '';
+            document.getElementById('vol-location').value = team.location || '';
+            document.getElementById('vol-contact').value  = team.contact  || '';
+            // Update form UI
+            const formTitle = document.querySelector('.vol-form-container h3');
+            if (formTitle) formTitle.textContent = 'Edit Team';
+            const submitBtn = document.querySelector('#volunteerForm button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Save Changes';
+            // Show cancel button if not yet added
+            if (!document.getElementById('vol-cancel-btn')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.type = 'button';
+                cancelBtn.id   = 'vol-cancel-btn';
+                cancelBtn.className = 'btn';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.style.cssText = 'margin-left:10px;background:#6c757d;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;';
+                cancelBtn.addEventListener('click', cancelEdit);
+                submitBtn.after(cancelBtn);
+            }
+            document.querySelector('#register-section').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Initial render
-        renderTeams(getTeams());
+        function cancelEdit() {
+            editingTeamId = null;
+            editingTeamLogo = null;
+            document.getElementById('volunteerForm').reset();
+            const formTitle = document.querySelector('.vol-form-container h3');
+            if (formTitle) formTitle.textContent = 'Register Team';
+            const submitBtn = document.querySelector('#volunteerForm button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Register Team';
+            const cancelBtn = document.getElementById('vol-cancel-btn');
+            if (cancelBtn) cancelBtn.remove();
+        }
+
+        function deleteTeam(teamId) {
+            if (!confirm('Are you sure you want to delete this team?')) return;
+            remove(ref(db, `teams/${teamId}`))
+                .then(() => console.log('Team deleted:', teamId))
+                .catch(err => console.error('Delete failed:', err));
+        }
+
+        function applySearch() {
+            const name     = document.getElementById('search-name').value.toLowerCase();
+            const purpose  = document.getElementById('search-purpose').value;
+            const location = document.getElementById('search-location').value.toLowerCase();
+            let filtered = allTeamsCache;
+            if (name)     filtered = filtered.filter(t => t.name.toLowerCase().includes(name));
+            if (purpose)  filtered = filtered.filter(t => t.purpose === purpose);
+            if (location) filtered = filtered.filter(t => t.location.toLowerCase().includes(location));
+            renderTeams(filtered);
+        }
+
+        // === Live listener for teams from Firebase RTDB ===
+        onValue(ref(db, 'teams'), snapshot => {
+            const data = snapshot.val() || {};
+            allTeamsCache = Object.entries(data)
+                .map(([id, team]) => ({ id, ...team }))
+                .reverse(); // newest first
+            applySearch();
+        });
 
         // Search listeners
         document.getElementById('search-name').addEventListener('input', applySearch);
@@ -354,31 +434,67 @@
         document.getElementById('search-location').addEventListener('input', applySearch);
 
         // Form submit
-        document.getElementById('volunteerForm').addEventListener('submit', function (e) {
+        document.getElementById('volunteerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            const name = document.getElementById('vol-name').value.trim();
-            const purpose = document.getElementById('vol-purpose').value;
-            const link = document.getElementById('vol-link').value.trim();
+
+            if (!currentUser) {
+                alert('Please sign in to register or edit a team.');
+                return;
+            }
+
+            const name     = document.getElementById('vol-name').value.trim();
+            const purpose  = document.getElementById('vol-purpose').value;
+            const link     = document.getElementById('vol-link').value.trim();
             const location = document.getElementById('vol-location').value.trim();
-            const contact = document.getElementById('vol-contact').value.trim();
+            const contact  = document.getElementById('vol-contact').value.trim();
             const logoFile = document.getElementById('team-logo').files[0];
 
+            // Fetch creator name from users node
+            let creatorName = currentUser.displayName || currentUser.email || 'Anonymous';
+            try {
+                const userSnap = await get(ref(db, `users/${currentUser.uid}`));
+                const userData = userSnap.val() || {};
+                creatorName = userData.name || creatorName;
+            } catch (_) { /* fallback already set */ }
+
             const saveTeamData = (logoDataUrl) => {
-                const teams = getTeams();
-                teams.unshift({ name, purpose, link, location, contact, logo: logoDataUrl || null });
-                saveTeams(teams);
-                renderTeams(teams);
+                const teamData = {
+                    name, purpose, link, location, contact,
+                    logo: logoDataUrl || editingTeamLogo || null,
+                    creatorUid:  currentUser.uid,
+                    creatorName,
+                    updatedAt: Date.now()
+                };
 
-                // +5 CO₂ for registering a volunteer team (Firebase-backed)
-                if (window.updateImpact) window.updateImpact(5, 0, 0);
+                if (editingTeamId) {
+                    // Update existing team (preserve createdAt)
+                    update(ref(db, `teams/${editingTeamId}`), teamData)
+                        .then(() => {
+                            cancelEdit();
+                            flashBtn('✅ Team Updated!');
+                        })
+                        .catch(err => console.error('Update failed:', err));
+                } else {
+                    // Create new team
+                    teamData.createdAt = Date.now();
+                    const newRef = push(ref(db, 'teams'));
+                    set(newRef, teamData)
+                        .then(() => {
+                            if (window.updateImpact) window.updateImpact(5, 0, 0);
+                            this.reset();
+                            flashBtn('✅ Team Registered!');
+                            document.querySelector('.registered-teams').scrollIntoView({ behavior: 'smooth' });
+                        })
+                        .catch(err => console.error('Create failed:', err));
+                }
+            };
 
-                this.reset();
-                document.querySelector('.registered-teams').scrollIntoView({ behavior: 'smooth' });
-                // Flash success
+            const flashBtn = (msg) => {
                 const btn = this.querySelector('button[type="submit"]');
-                btn.textContent = '✅ Team Registered!';
+                const orig = btn.textContent;
+                btn.textContent = msg;
                 btn.style.background = '#28a745';
-                setTimeout(() => { btn.textContent = 'Register Team'; btn.style.background = ''; }, 2500);
+                setTimeout(() => { btn.textContent = editingTeamId ? 'Save Changes' : 'Register Team'; btn.style.background = ''; }, 2500);
             };
 
             if (logoFile) {
@@ -392,4 +508,4 @@
     </script>
 </body>
 
-</html>
+</html>
