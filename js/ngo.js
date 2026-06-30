@@ -8,9 +8,6 @@ function initNgoPage() {
             id: "mock1",
             name: "Goonj",
             location: "Delhi, India",
-            email: "mail@goonj.org",
-            phone: "+91-11-26972351",
-            whatsapp: "911126972351",
             website: "https://goonj.org",
             image: "https://files.catbox.moe/aag4y5.jpg", // placeholder
             tag: "Recently Registered NGO",
@@ -21,9 +18,6 @@ function initNgoPage() {
             id: "mock2",
             name: "Share At Doorstep",
             location: "Bangalore, India",
-            email: "contact@sadsindia.org",
-            phone: "+91-80-41525252",
-            whatsapp: "918041525252",
             website: "https://sadsindia.org",
             image: "https://files.catbox.moe/mhv4yx.jpg", // placeholder
             tag: "Active",
@@ -34,9 +28,6 @@ function initNgoPage() {
             id: "mock3",
             name: "Clothes Box Foundation",
             location: "Gurgaon, India",
-            email: "info@clothesboxfoundation.org",
-            phone: "+91-9999999999",
-            whatsapp: "919999999999",
             website: "https://clothesboxfoundation.org",
             image: "https://files.catbox.moe/fr6h5p.jpg", // placeholder
             tag: "Trusted",
@@ -47,9 +38,6 @@ function initNgoPage() {
             id: "mock4",
             name: "Robin Hood Army",
             location: "Mumbai, India",
-            email: "info@robinhoodarmy.com",
-            phone: "+91-8888888888",
-            whatsapp: "918888888888",
             website: "https://robinhoodarmy.com",
             image: "https://files.catbox.moe/q348bw.jpg", // placeholder
             tag: "Food Rescue",
@@ -60,9 +48,6 @@ function initNgoPage() {
             id: "mock5",
             name: "Snehalaya",
             location: "Ahmednagar, India",
-            email: "info@snehalaya.org",
-            phone: "+91-241-2778353",
-            whatsapp: "912412778353",
             website: "https://www.snehalaya.org",
             image: "https://files.catbox.moe/6ur92m.jpg", // placeholder
             tag: "Women & Children",
@@ -73,9 +58,6 @@ function initNgoPage() {
             id: "mock6",
             name: "SevaDeep",
             location: "Pune, India",
-            email: "contact@sevadeep.org",
-            phone: "+91-7777777777",
-            whatsapp: "917777777777",
             website: "",
             image: "https://files.catbox.moe/aag4y5.jpg", // placeholder
             tag: "Household",
@@ -86,9 +68,6 @@ function initNgoPage() {
             id: "mock7",
             name: "Sparsh Setu",
             location: "Ahmedabad, India",
-            email: "hello@sparshsetu.in",
-            phone: "+91-6666666666",
-            whatsapp: "916666666666",
             website: "",
             image: "https://files.catbox.moe/mhv4yx.jpg", // placeholder
             tag: "Community",
@@ -99,9 +78,6 @@ function initNgoPage() {
             id: "mock8",
             name: "Anamprem",
             location: "Nashik, India",
-            email: "anamprem@gmail.com",
-            phone: "+91-5555555555",
-            whatsapp: "915555555555",
             website: "https://anamprem.org",
             image: "https://files.catbox.moe/fr6h5p.jpg", // placeholder
             tag: "Disability Support",
@@ -112,9 +88,6 @@ function initNgoPage() {
             id: "mock9",
             name: "Green Yatra",
             location: "Mumbai, India",
-            email: "info@greenyatra.org",
-            phone: "+91-4444444444",
-            whatsapp: "914444444444",
             website: "https://greenyatra.org",
             image: "https://files.catbox.moe/q348bw.jpg", // placeholder
             tag: "Environment",
@@ -125,9 +98,6 @@ function initNgoPage() {
             id: "mock10",
             name: "HelpAge India",
             location: "Delhi, India",
-            email: "headoffice@helpageindia.org",
-            phone: "+91-11-41688955",
-            whatsapp: "911141688955",
             website: "https://www.helpageindia.org",
             image: "https://files.catbox.moe/6ur92m.jpg", // placeholder
             tag: "Elder Care",
@@ -138,9 +108,6 @@ function initNgoPage() {
             id: "mock11",
             name: "Uday Foundation",
             location: "Delhi, India",
-            email: "info@udayfoundation.org",
-            phone: "+91-11-26561333",
-            whatsapp: "911126561333",
             website: "https://www.udayfoundation.org",
             image: "https://files.catbox.moe/aag4y5.jpg", // placeholder
             tag: "Health",
@@ -227,100 +194,145 @@ function initNgoPage() {
     }
 
     // Render NGOs
-    function renderNGOs() {
-        ngoGrid.innerHTML = "";
-        const ngosToShow = filteredNgos.slice(0, visibleCount);
+   function renderNGOs() {
+    ngoGrid.innerHTML = "";
+    
+    const sortedNgos = [...filteredNgos].sort((a, b) => {
+        const aIsReal = !!a.ownerUid;
+        const bIsReal = !!b.ownerUid;
+        return bIsReal - aIsReal;
+    });
+    
+    const ngosToShow = sortedNgos.slice(0, visibleCount);
 
-        ngosToShow.forEach(ngo => {
-            const hasWebsite = ngo.website && ngo.website.trim() !== "";
-            
-            const escName = escapeHTML(ngo.name);
-            const escLocation = escapeHTML(ngo.location);
-            const escImage = escapeHTML(ngo.image || "https://files.catbox.moe/aag4y5.jpg");
-            const escTag = escapeHTML(ngo.tag);
-            const escDesc = escapeHTML(ngo.desc);
+    ngosToShow.forEach(ngo => {
+        const hasWebsite = ngo.website && ngo.website.trim() !== "";
+        const hasEmail = ngo.email && ngo.email.trim() !== "";
+        const hasPhone = ngo.phone && ngo.phone.trim() !== "";
+        const hasWhatsapp = ngo.whatsapp && ngo.whatsapp.trim() !== "";
+        const showIcons = hasEmail || hasPhone || hasWhatsapp;
+        
+        const isRealNgo = !!ngo.ownerUid;
+        
+        const escName = escapeHTML(ngo.name);
+        const escLocation = escapeHTML(ngo.location);
+        const escImage = escapeHTML(ngo.image || "https://files.catbox.moe/aag4y5.jpg");
+        const escTag = escapeHTML(ngo.tag);
+        const escDesc = escapeHTML(ngo.desc);
 
-            const isOwner = currentUser && ngo.ownerUid && currentUser.uid === ngo.ownerUid;
-            const ownerActions = isOwner
-                ? `<div class="ngo-owner-actions" style="display:flex;gap:6px;margin:8px 0;justify-content:center;">
-                        <button class="ngo-edit-btn" style="background:#ff922d;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
-                          <i class="fa-solid fa-pen-to-square"></i> Edit
-                        </button>
-                        <button class="ngo-delete-btn" style="background:#dc3545;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
-                          <i class="fa-solid fa-trash"></i> Delete
-                        </button>
-                   </div>`
-                : '';
+        const isOwner = currentUser && ngo.ownerUid && currentUser.uid === ngo.ownerUid;
+        const ownerActions = isOwner
+            ? `<div class="ngo-owner-actions" style="display:flex;gap:6px;margin:8px 0;justify-content:center;">
+                    <button class="ngo-edit-btn" style="background:#ff922d;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                      <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                    <button class="ngo-delete-btn" style="background:#dc3545;color:white;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:0.82rem;">
+                      <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+               </div>`
+            : '';
 
-            const card = document.createElement("div");
-            card.className = "ngo-card";
-            card.innerHTML = `
-                <div class="ngo-card-top">
-                    <img class="ngo-img" src="${escImage}" alt="${escName}">
-                    <div class="ngo-info">
-                        <h3>${escName}</h3>
-                        <p>${escLocation}</p>
-                        <div class="ngo-icons">
-                            <i class="fa-solid fa-envelope icon-email" title="Email"></i>
-                            <i class="fa-solid fa-phone icon-phone" title="Call"></i>
-                            <i class="fa-brands fa-whatsapp icon-whatsapp" title="WhatsApp"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="ngo-tag">${escTag}</p>
-                <p class="ngo-desc">${escDesc}</p>
-                ${ownerActions}
+        let cardActionsHTML = '';
+        if (isRealNgo) {
+            cardActionsHTML = `
                 <div class="ngo-card-actions">
                     <button class="ngo-btn ngo-donate-btn">Donate</button>
                     <button class="ngo-btn ngo-connect-btn">Connect</button>
                 </div>
             `;
+        } else if (hasWebsite) {
+            cardActionsHTML = `
+                <div class="ngo-card-actions">
+                    <button class="ngo-btn ngo-donate-btn ngo-website-btn">Visit Website</button>
+                </div>
+            `;
+        }
 
+        const card = document.createElement("div");
+        card.className = "ngo-card";
+        card.innerHTML = `
+            <div class="ngo-card-top">
+                <img class="ngo-img" src="${escImage}" alt="${escName}">
+                <div class="ngo-info">
+                    <h3>${escName}</h3>
+                    <p>${escLocation}</p>
+                    ${showIcons ? `
+                    <div class="ngo-icons">
+                        ${hasEmail ? `<i class="fa-solid fa-envelope icon-email" title="Email"></i>` : ''}
+                        ${hasPhone ? `<i class="fa-solid fa-phone icon-phone" title="Call"></i>` : ''}
+                        ${hasWhatsapp ? `<i class="fa-brands fa-whatsapp icon-whatsapp" title="WhatsApp"></i>` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+            <p class="ngo-tag">${isRealNgo ? 'Verified' : 'Public Listing'}</p>
+            <p class="ngo-desc">${escDesc}</p>
+            ${ownerActions}
+            ${cardActionsHTML}
+        `;
+
+        if (hasEmail) {
             card.querySelector(".icon-email").addEventListener("click", () => {
                 window.open(`mailto:${encodeURIComponent(ngo.email)}`, '_blank');
             });
+        }
+        if (hasPhone) {
             card.querySelector(".icon-phone").addEventListener("click", () => {
                 window.open(`tel:${encodeURIComponent(ngo.phone)}`, '_blank');
             });
+        }
+        if (hasWhatsapp) {
             card.querySelector(".icon-whatsapp").addEventListener("click", () => {
                 window.open(`https://wa.me/${encodeURIComponent(ngo.whatsapp)}`, '_blank');
             });
+        }
 
+        if (!isRealNgo && hasWebsite) {
+            card.querySelector(".ngo-website-btn").addEventListener("click", () => {
+                window.open(ngo.website, '_blank');
+            });
+        }
+
+        if (isRealNgo) {
             card.querySelector(".ngo-donate-btn").addEventListener("click", () => {
                 if (hasWebsite) {
-                    window.open(`${ngo.website}/donate`, '_blank');
-                } else {
-                    window.open(`https://wa.me/${encodeURIComponent(ngo.whatsapp)}`, '_blank');
+                    window.open(ngo.website, '_blank');
+                } else if (hasWhatsapp) {
+                    window.open(`https://wa.me/${encodeURIComponent(ngo.whatsapp)}?text=Hi, I want to donate to ${encodeURIComponent(ngo.name)}`, '_blank');
+                } else if (hasPhone) {
+                    window.open(`tel:${encodeURIComponent(ngo.phone)}`, '_blank');
                 }
             });
 
             card.querySelector(".ngo-connect-btn").addEventListener("click", () => {
                 if (hasWebsite) {
-                    window.open(`${ngo.website}/contact`, '_blank');
-                } else {
-                    window.open(`mailto:${encodeURIComponent(ngo.email)}`, '_blank');
+                    window.open(ngo.website, '_blank');
+                } else if (hasEmail) {
+                    window.open(`mailto:${encodeURIComponent(ngo.email)}?subject=Inquiry about ${encodeURIComponent(ngo.name)}`, '_blank');
+                } else if (hasWhatsapp) {
+                    window.open(`https://wa.me/${encodeURIComponent(ngo.whatsapp)}?text=Hi, I want to connect with ${encodeURIComponent(ngo.name)}`, '_blank');
                 }
             });
-
-            if (isOwner) {
-                card.querySelector(".ngo-edit-btn").addEventListener("click", () => {
-                    loadNgoIntoForm(ngo);
-                });
-                card.querySelector(".ngo-delete-btn").addEventListener("click", () => {
-                    deleteNgo(ngo.ownerUid, ngo.id);
-                });
-            }
-
-            ngoGrid.appendChild(card);
-        });
-
-        if (visibleCount >= filteredNgos.length) {
-            loadMoreBtn.style.display = "none";
-        } else {
-            loadMoreBtn.style.display = "inline-block";
         }
-    }
 
+        if (isOwner) {
+            card.querySelector(".ngo-edit-btn").addEventListener("click", () => {
+                loadNgoIntoForm(ngo);
+            });
+            card.querySelector(".ngo-delete-btn").addEventListener("click", () => {
+                deleteNgo(ngo.ownerUid, ngo.id);
+            });
+        }
+
+        ngoGrid.appendChild(card);
+    });
+
+    if (visibleCount >= sortedNgos.length) {
+        loadMoreBtn.style.display = "none";
+    } else {
+        loadMoreBtn.style.display = "inline-block";
+    }
+}
     // Filter Logic
     function applyFilters() {
         const query = searchInput.value.toLowerCase().trim();

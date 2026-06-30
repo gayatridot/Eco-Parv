@@ -301,17 +301,92 @@ nav button,
 
 footer {
     background: #4d8b1c;
-    padding: 50px 5%;
+    padding: 30px 5% 20px;
     text-align: center;
     margin: 40px 60px 0 120px;
-    padding: 30px;
-    display: flex;
-    align-items: center;
     gap: 20px;
-    height: 100px;
-    justify-content: space-around
+    justify-content: space-around;
+    color: #fff;
 }
 
+.footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+}
+
+.beta-tag {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.footer-tagline {
+    font-size: 0.9rem;
+    color: #e8f5e8;
+    font-weight: 500;
+}
+
+.footer-disclaimer {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    margin-top: 8px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    footer {
+        margin: 40px 20px 0 20px;
+        padding: 25px 5%;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .footer-brand {
+        font-size: 1rem;
+    }
+
+    .footer-tagline {
+        font-size: 0.85rem;
+    }
+}
 
 /* Layout Container */
 .main-container {
@@ -2004,6 +2079,7 @@ footer {
     flex-direction: column;
     border-top: 4px solid #5A9C2A;
     transition: transform 0.3s;
+    height: 100%;
 }
 
 .renew-card:hover {
@@ -2024,6 +2100,7 @@ footer {
 }
 
 .renew-card h3 {
+    min-height: 50px;
     font-size: 1.4rem;
     color: #222;
     margin-bottom: 15px;
@@ -2033,10 +2110,16 @@ footer {
     font-size: 1rem;
     color: #666;
     flex: 1;
-    margin-bottom: 25px;
+    margin-bottom: 40px;
     line-height: 1.5;
 }
-
+.card-disclaimer {
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 8px;
+    font-style: italic;
+    margin-bottom: 0;
+}
 .btn-renew {
     display: inline-block !important;
     cursor: pointer !important;
@@ -2049,6 +2132,7 @@ footer {
     font-weight: bold !important;
     height: auto !important;
     transition: background 0.3s, color 0.3s !important;
+    margin-top: auto !important;
 }
 
 .btn-renew:hover {
@@ -2066,7 +2150,8 @@ footer {
     padding: 0 20px;
 }
 
-.btn-action {
+.btn-action,
+.ngo-website-btn {
     display: inline-block !important;
     cursor: pointer !important;
     background: #47a948 !important;

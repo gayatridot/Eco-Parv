@@ -33,10 +33,20 @@ function injectSharedLayout() {
   // 3. FOOTER HTML
   const footerHTML = `
     <footer>
+   <div class = "footer-links">
       <div><a href="/pages/donate.html">Donate</a></div>
       <div><a href="/pages/About.html">Volunteer</a></div>
       <div><a href="/pages/About.html">FAQ</a></div>
       <div><a href="/pages/contact.html">Privacy Policy</a></div>
+      </div>
+        <div class="footer-brand">
+        <span>EcoParv</span>
+        <span class="beta-tag">Beta</span>
+        <span class="footer-tagline">· From Nashik to the World ·</span>
+      </div>
+      <div class="footer-disclaimer">
+        Public NGO directory · Not affiliated with listed NGOs
+      </div>
     </footer>
   `;
 
