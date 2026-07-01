@@ -109,5 +109,10 @@ Eco-Parv/
 
 ---
 
+📄  **License** 
+© 2026 Gayatri Ghogare — Provided for reference and demonstration only .
+
+---
+
 *Built with ❤️ for a greener future.*
 
